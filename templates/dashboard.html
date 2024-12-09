@@ -1,0 +1,83 @@
+<!-- templates/dashboard.html -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Trading Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 40px;
+      }
+      th,
+      td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+    <script>
+      async function loadTrades() {
+        const response = await fetch("/trades");
+        const trades = await response.json();
+        let tradesTable =
+          "<table><tr><th>ID</th><th>Symbol</th><th>Quantity</th><th>Entry Price</th><th>Target Price</th><th>Stop Loss</th><th>Order ID</th><th>Timestamp</th></tr>";
+        trades.forEach((trade) => {
+          tradesTable += `<tr>
+                    <td>${trade.id}</td>
+                    <td>${trade.symbol}</td>
+                    <td>${trade.quantity}</td>
+                    <td>${trade.entry_price}</td>
+                    <td>${trade.target_price}</td>
+                    <td>${trade.stop_loss}</td>
+                    <td>${trade.order_id}</td>
+                    <td>${trade.timestamp}</td>
+                </tr>`;
+        });
+        tradesTable += "</table>";
+        document.getElementById("trades").innerHTML = tradesTable;
+      }
+
+      async function loadLogs() {
+        const response = await fetch("/logs");
+        const logs = await response.json();
+        let logsTable =
+          "<table><tr><th>ID</th><th>Level</th><th>Message</th><th>Timestamp</th></tr>";
+        logs.forEach((log) => {
+          logsTable += `<tr>
+                    <td>${log.id}</td>
+                    <td>${log.level}</td>
+                    <td>${log.message}</td>
+                    <td>${log.timestamp}</td>
+                </tr>`;
+        });
+        logsTable += "</table>";
+        document.getElementById("logs").innerHTML = logsTable;
+      }
+
+      window.onload = function () {
+        loadTrades();
+        loadLogs();
+        setInterval(loadTrades, 60000); // Refresh every minute
+        setInterval(loadLogs, 60000); // Refresh every minute
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Trading Dashboard</h1>
+
+    <h2>Trades</h2>
+    <div id="trades">Loading trades...</div>
+
+    <h2>Logs</h2>
+    <div id="logs">Loading logs...</div>
+  </body>
+</html>
